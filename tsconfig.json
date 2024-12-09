@@ -13,11 +13,12 @@
     "allowJs": true,
     "jsx": "react-jsx",
     "jsxImportSource": "preact",
-    "baseUrl": "./src",
+    "baseUrl": ".",
     "paths": {
-      "@components/*": ["components/*"],
-      "@layouts/*": ["layouts/*"],
-      "@lib/*": ["lib/*"],
+      "@components/*": ["./src/components/*"],
+      "@layouts/*": ["./src/layouts/*"],
+      "@lib/*": ["./src/lib/*"],
+      "@db/*": ["db/*"],
     }
   }
 }

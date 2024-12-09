@@ -38,14 +38,14 @@ const todaySched = await getTodaySchedule(user.uid, date.getDay());
 			<p class="text-gray-500">Agrega tus clases y horarios en la seccion</p>
 			<a href="/home/dashboard/clases/" class="btn btn-primary">Clases</a>
 			}
-			{
+<!-- 			{
 				!!classes.length &&
 					(block_mode ? (
 						<BlockView schedule={todaySchedToBlockMap(todaySched)} />
 					) : (
 						<p>TimeMode</p>
 					))
-			}
+			} -->
 		</section>
 	</main>
 	<GeneralSideBar slot="sidebar" />

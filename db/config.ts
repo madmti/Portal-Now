@@ -4,10 +4,14 @@ export type tSistemTimeRange = Record<'range', [number, number]>;
 
 export type tSistemTime = Record<string, tSistemTimeRange>;
 
+export type tSistemType = 'range';
+
 const TimeSistems = defineTable({
   columns: {
     id: column.number({ primaryKey: true }),
+    is_global: column.boolean(),
     name: column.text({ multiline: false }),
+    sistem_type: column.text({ multiline: false }),
     sistem: column.json(),
     sorted_keys: column.json(),
   }

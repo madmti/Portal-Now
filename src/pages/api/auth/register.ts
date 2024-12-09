@@ -2,7 +2,7 @@ import type { APIRoute } from "astro";
 import { getAuth } from "firebase-admin/auth";
 import { app } from "../../../firebase/server";
 
-export const POST: APIRoute = async ({ request, redirect }) => {
+export const POST: APIRoute = async ({ request, redirect, cookies }) => {
 
     const auth = getAuth(app);
 
@@ -32,5 +32,8 @@ export const POST: APIRoute = async ({ request, redirect }) => {
         );
     }
 
-    return redirect("/auth/signin/");
+    return new Response(
+        "User created",
+        { status: 200 }
+    );
 };

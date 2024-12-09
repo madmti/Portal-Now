@@ -25,7 +25,7 @@ const classesMap = getClassesMapFromInfo(classesInfo);
 					<a class="btn btn-disabled">Cargar en CFT</a>
 				</div>
 		}
-		{
+		<!-- {
 			!!classes.length &&
 				classes.map((c, i) => {
 					const class_data = classesMap.get(c.name)!;
@@ -89,11 +89,11 @@ const classesMap = getClassesMapFromInfo(classesInfo);
 						</article>
 					);
 				})
-		}
+		} -->
 	</main>
 	<div slot="sidebar" class="h-full flex flex-col justify-between">
 		<nav class="flex min-w-[240px] flex-col gap-1 p-2 text-base">
-			{
+			<!-- {
 				classes.map((c) => (
 					<a
 						href={`/home/dashboard/clases/${c.name}/`}
@@ -103,7 +103,7 @@ const classesMap = getClassesMapFromInfo(classesInfo);
 						{c.name}
 					</a>
 				))
-			}
+			} -->
 				<a
 					href="/home/dashboard/clases/agregar/"
 					class="flex items-center gap-2 w-full px-4 py-2 transition-all rounded-lg outline-none text-start text-lg bg-[#0a0c0e2c] text-primary hover:bg-neutral"

@@ -1,6 +1,7 @@
 import { defineMiddleware, sequence } from "astro:middleware";
 import { app } from '../firebase/server';
 import { getAuth } from 'firebase-admin/auth';
+import { db, Preferences, sql } from "astro:db";
 
 const authenticate = defineMiddleware(async (context, next) => {
     if (!context.url.pathname.includes('/home')) {
@@ -25,5 +26,18 @@ const authenticate = defineMiddleware(async (context, next) => {
     }
 });
 
+const isFirstTime = defineMiddleware(async (context, next) => {
+    if (!context.url.pathname.includes('/home') || context.url.pathname.includes('/home/setup')) {
+        return next();
+    }
+    const user = context.locals.user;
+    const prefs = await db.select().from(Preferences).where(sql`${Preferences.user_uid} = ${user.uid}`);
 
-export const onRequest = sequence(authenticate);
+    if (!prefs.length) {
+        return context.redirect('/home/setup/');
+    }
+
+    return next();
+});
+
+export const onRequest = sequence(authenticate, isFirstTime);

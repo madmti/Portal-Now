@@ -2,6 +2,7 @@
 import Layout from '@layouts/Layout.astro';
 import SignInGoogle from '@components/auth/SignInGoogle';
 import SignInGithub from '@components/auth/SignInGithub';
+import RegisterEmail from '@components/auth/RegisterEmail';
 
 export const prerender = true;
 ---
@@ -63,14 +64,7 @@ export const prerender = true;
 					/>
 				</div>
 				<div class="pt-5">
-					<button
-						id="registerButton"
-						type="submit"
-						class="btn btn-primary w-full"
-					>
-						<span id="loadingSpan"></span>
-						Registrarse
-					</button>
+					<RegisterEmail client:only="preact" />
 				</div>
 
 				<a href="/auth/signin/" class="link link-primary text-sm">

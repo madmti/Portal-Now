@@ -16,7 +16,9 @@ export default async function seed() {
      */
     await db.insert(TimeSistems).values([
         {
+            is_global: true,
             name: 'UTFSM',
+            sistem_type: 'range',
             sistem: {
                 '1-2': { range: [getMilis(8, 15), getMilis(9, 25)] },
                 '3-4': { range: [getMilis(9, 35), getMilis(10, 45)] },
