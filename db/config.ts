@@ -1,13 +1,25 @@
 import { defineDb, defineTable, column } from 'astro:db';
 
-export type BlockTimeJson = {
-  blocks: string[];
-};
+export type tSistemTimeRange = Record<'range', [number, number]>;
 
-/**
- * @field user_uid - from firebase auth
- * @field name - max 10 characters
- */
+export type tSistemTime = Record<string, tSistemTimeRange>;
+
+const TimeSistems = defineTable({
+  columns: {
+    id: column.number({ primaryKey: true }),
+    name: column.text({ multiline: false }),
+    sistem: column.json(),
+    sorted_keys: column.json(),
+  }
+});
+
+const Preferences = defineTable({
+  columns: {
+    user_uid: column.text({ primaryKey: true }),
+    custom_time_sistem: column.number({ references: () => TimeSistems.columns.id, optional: true }),
+  }
+});
+
 const Classes = defineTable({
   columns: {
     id: column.number({ primaryKey: true }),
@@ -16,11 +28,7 @@ const Classes = defineTable({
   }
 })
 
-/**
- * @field user_uid - from firebase auth
- * @field class_id - reference to Classes
- * @field time - JSON object depdending on block_mode
- */
+
 const Schedules = defineTable({
   columns: {
     id: column.number({ primaryKey: true }),
@@ -29,11 +37,16 @@ const Schedules = defineTable({
     type: column.text({ multiline: false }),
     day: column.number(),
     place: column.text({ multiline: false }),
-    block_mode: column.boolean(),
-    time: column.json(),
+    sistem_id: column.number({ references: () => TimeSistems.columns.id, optional: true }),
+    sistem_key: column.text({ multiline: false }),
   },
 });
 
 export default defineDb({
-  tables: { Classes, Schedules },
+  tables: {
+    TimeSistems,
+    Preferences,
+    Classes,
+    Schedules,
+  },
 })

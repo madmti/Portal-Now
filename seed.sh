@@ -1,0 +1,1 @@
+bunx --bun astro db execute ./db/seed.ts --remote
