@@ -31,13 +31,13 @@ export default function ChooseSistem({ sistems }: { sistems: tgetSistemsRes }) {
 				</select>
 			</div>
 			{selectedSistem === -1 && (
-				<p class="text-xl text-gray-500 mt-4">
+				<p class="text-lg text-gray-500 mt-4">
 					No has seleccionado un sistema, puedes continuar sin un sistema de
 					horarios, seleccionar uno o crear uno personalizado mas tarde.
 					<br />
 					<br />
-					No elegir un sistema no tiene efectos negativos en la aplicación.
-					simplemente se veran los horarios de las clases segun la hora.
+					No elegir un sistema no tiene efectos negativos en la aplicación,
+					simplemente se veran los horarios cronologicamente segun la hora.
 				</p>
 			)}
 			{selectedSistem !== -1 && (

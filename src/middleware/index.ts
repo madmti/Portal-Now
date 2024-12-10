@@ -31,11 +31,15 @@ const isFirstTime = defineMiddleware(async (context, next) => {
         return next();
     }
     const user = context.locals.user;
-    const prefs = await db.select().from(Preferences).where(sql`${Preferences.user_uid} = ${user.uid}`);
+    const prefs = await db.select({
+        custom_time_sistem: Preferences.custom_time_sistem,
+    }).from(Preferences).where(sql`${Preferences.user_uid} = ${user.uid}`);
 
     if (!prefs.length) {
         return context.redirect('/home/setup/');
     }
+
+    context.locals.preferences = prefs[0];
 
     return next();
 });

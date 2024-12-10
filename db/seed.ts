@@ -42,7 +42,10 @@ export default async function seed() {
      * INSERT PREFERENCES
      */
     await db.insert(Preferences).values([
-        { user_uid, custom_time_sistem },
+        {
+            user_uid,
+            custom_time_sistem
+        },
     ]);
 
     /**

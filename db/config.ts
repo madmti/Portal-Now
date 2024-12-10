@@ -21,7 +21,7 @@ const Preferences = defineTable({
   columns: {
     user_uid: column.text({ primaryKey: true }),
     custom_time_sistem: column.number({ references: () => TimeSistems.columns.id, optional: true }),
-  }
+  },
 });
 
 const Classes = defineTable({

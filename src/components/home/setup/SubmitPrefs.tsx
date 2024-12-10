@@ -38,7 +38,7 @@ export default function SubmitPrefs() {
 		<>
 			<button
 				type="button"
-				className={`btn btn-primary btn-wide ${
+				className={`btn btn-primary btn-wide self-center mt-4 ${
 					active ? 'btn-disabled' : error ? 'btn-error' : ''
 				}`}
 				onClick={onClick}

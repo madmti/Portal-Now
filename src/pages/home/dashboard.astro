@@ -1,17 +1,16 @@
 ---
-import BlockClock from '@components/home/BlockClock';
-import BlockView from '@components/home/BlockView.astro';
 import Clock from '@components/home/Clock';
 import GeneralSideBar from '@components/home/GeneralSideBar.astro';
+import RangeView from '@components/home/RangeView.astro';
+import SisClock from '@components/home/SisClock';
 import DashboardLayout from '@layouts/DashboardLayout.astro';
-import { getClasses, getTodaySchedule } from '@lib/database';
-import { todaySchedToBlockMap } from '@lib/format';
+import { getClasses, getTimeSistem, getTodaySchedule } from '@lib/database';
 import { getDay } from '@lib/time';
 const date = new Date();
-const { user } = Astro.locals;
-const block_mode = true;
+const { user, preferences } = Astro.locals;
 const classes = await getClasses(user.uid);
-const todaySched = await getTodaySchedule(user.uid, date.getDay());
+const time_sistem = await getTimeSistem(preferences.custom_time_sistem)
+const todaySched = await getTodaySchedule(user.uid, preferences.custom_time_sistem, date.getDay());
 ---
 
 <DashboardLayout>
@@ -23,7 +22,9 @@ const todaySched = await getTodaySchedule(user.uid, date.getDay());
 			<div>
 				<div class="text-3xl flex flex-wrap">
 					<h3 class="mr-2">{getDay(date)}</h3>
-					<BlockClock client:only="preact" />
+					{
+						!!time_sistem && <SisClock client:only="preact" sistem_type={time_sistem.type} sistem={time_sistem.sistem}/>
+					}
 				</div>
 				<p class="text-lg text-gray-500">{date.toLocaleDateString()}</p>
 			</div>
@@ -38,14 +39,17 @@ const todaySched = await getTodaySchedule(user.uid, date.getDay());
 			<p class="text-gray-500">Agrega tus clases y horarios en la seccion</p>
 			<a href="/home/dashboard/clases/" class="btn btn-primary">Clases</a>
 			}
-<!-- 			{
-				!!classes.length &&
-					(block_mode ? (
-						<BlockView schedule={todaySchedToBlockMap(todaySched)} />
-					) : (
-						<p>TimeMode</p>
-					))
-			} -->
+			{
+				!time_sistem && <p>No time sistem -> sistem = hour</p>	
+			}
+			{
+				!!time_sistem && time_sistem.type === 'range' ? (
+					<RangeView schedule={todaySched} time_sistem={time_sistem} />
+				) : (
+					<p>Time sistem not supported</p>
+				)
+			}
+			
 		</section>
 	</main>
 	<GeneralSideBar slot="sidebar" />

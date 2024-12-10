@@ -7,6 +7,9 @@ interface ImportMetaEnv {
 
 declare namespace App {
     interface Locals {
+        preferences: {
+            custom_time_sistem: number | null;
+        };
         user: {
             /**
              * The user's `uid`.

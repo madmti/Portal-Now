@@ -9,17 +9,17 @@ const global_sistems = await getGlobalSistems();
 ---
 
 <Layout>
-	<main class="w-full h-full flex flex-col justify-center items-center">
-		<form id="prefs-form" class="flex flex-col gap-4 p-8 max-w-2xl w-full">
+	<main class="w-full h-full flex flex-col items-center p-8 overflow-y-auto">
+		<form id="prefs-form" class="flex flex-col gap-4 my-auto max-w-2xl w-full">
 			<h1 class="text-2xl text-primary flex items-center gap-2">
 				<span class="icon-[tabler--user]"></span>{user.displayName}
 			</h1>
-			<h2 class="text-3xl mb-4">
+			<h2 class="text-2xl mb-4">
 				Bienvenido a <span class="text-primary">PORTAL now</span>, empecemos
 				configurando tus preferencias.
 			</h2>
 			<ChooseSistem client:only="preact" sistems={global_sistems} />
+			<SubmitPrefs client:only="preact" />
 		</form>
-		<SubmitPrefs client:only="preact" />
 	</main>
 </Layout>

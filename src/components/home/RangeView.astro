@@ -1,0 +1,101 @@
+---
+import { getTimeStamp } from '@db/utils';
+import { getGradualActive, getValues } from '@db/utils';
+import type { tgetTimeSistemRes, tgetTodayScheduleRes } from '@lib/database';
+import { schedToKeyMap } from '@lib/format';
+
+interface Props {
+	schedule: tgetTodayScheduleRes[];
+	time_sistem: tgetTimeSistemRes;
+}
+const { schedule, time_sistem } = Astro.props;
+const key_map = schedToKeyMap(schedule);
+const now = getTimeStamp();
+---
+
+{
+	!schedule.length && (
+		<h1 class="text-gray-500 text-2xl p-20">Nada para hoy 😄</h1>
+	)
+}
+{
+	!!schedule.length && (
+		<ul class="timeline timeline-vertical *:ml-[-90%]">
+			{time_sistem.sorted_keys.map((key, idx) => {
+				const sched = key_map.get(key);
+				const value = getValues(key, time_sistem.type, time_sistem.sistem);
+				const active = getGradualActive(
+					now.getTime(),
+					key,
+					time_sistem.sorted_keys,
+					time_sistem.type,
+					time_sistem.sistem
+				);
+				return (
+					<li class="text-xl group">
+						{idx !== 0 && (
+							<hr
+								class={active !== undefined && active >= 0 ? 'bg-primary' : ''}
+							/>
+						)}
+						<div class="timeline-middle flex w-14 justify-center">
+							<span
+								class={
+									active !== undefined && active >= 0 ? 'text-primary' : ''
+								}
+							>
+								{key}
+							</span>
+						</div>
+						<div
+							tabindex="0"
+							class={`timeline-end collapse bg-base-200 border ${!sched ? 'collapse-close border-gray-500' : active !== undefined && active == 1 ? 'border-primary' : 'border-gray-500'}`}
+						>
+							<h3
+								class={`collapse-title text-xl font-medium flex items-center gap-2 ${!sched ? 'text-gray-500' : ''}`}
+							>
+								{!sched && 'Vacio'}
+								{!sched && (
+									<span class="text-base text-accent opacity-0 group-hover:opacity-100 transition-all">
+										{value}
+									</span>
+								)}
+								{!!sched && (
+									<h3
+										class={`collapse-title text-xl font-medium flex items-center gap-2 ${sched.length > 1 ? 'text-error' : ''}`}
+									>
+										{sched[0].class_name}
+										{sched.length > 1 && (
+											<div class="badge badge-error">+{sched.length - 1}</div>
+										)}
+									</h3>
+								)}
+								{!!sched && (
+									<div class="collapse-content">
+										<span class="text-base text-accent">{value}</span>
+										{sched.length > 1 && (
+											<h1 class="text-lg">{sched[0].class_name}</h1>
+										)}
+										<p>{`${sched[0].type} - ${sched[0].place}`}</p>
+										{sched.slice(1).map((s) => (
+											<>
+												<div class="divider">o</div>
+												<h1 class="text-lg">{s.class_name}</h1>
+												<p>{`${s.type} - ${s.place}`}</p>
+											</>
+										))}
+									</div>
+								)}
+							</h3>
+						</div>
+						{idx !== time_sistem.sorted_keys.length - 1 && (
+							<hr
+								class={active !== undefined && active >= 2 ? 'bg-primary' : ''}
+							/>
+						)}
+					</li>
+				);
+			})}
+		</ul>
+	)
+}
