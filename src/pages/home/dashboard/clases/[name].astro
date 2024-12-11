@@ -1,13 +1,17 @@
 ---
-import EditSchedule from '@components/home/classes/EditSchedule';
+import EditSched from '@components/home/classes/EditSched';
 import DashboardLayout from '@layouts/DashboardLayout.astro';
-import { getSchedule } from '@lib/database';
-import { repeatPerBlock } from '@lib/format';
+import { getGlobalSistems } from '@lib/database';
+import { getClassInfo } from '@lib/database';
+import { getClassMapFromInfo } from '@lib/format';
 
-const { user } = Astro.locals;
+const { user, preferences } = Astro.locals;
 const { name } = Astro.params;
-const sched = await getSchedule(user.uid, name || '');
-const blocks = repeatPerBlock(sched);
+if (!name) {
+	return Astro.redirect('/home/dashboard/clases/');
+}
+const classInfo = await getClassInfo(user.uid, name);
+const global_sistems = await getGlobalSistems();
 ---
 
 <DashboardLayout hideSidebar>
@@ -20,10 +24,12 @@ const blocks = repeatPerBlock(sched);
 		</div>
 		<div class="w-full max-w-2xl flex flex-col gap-4">
 			<div class="flex flex-col gap-2">
-				<EditSchedule
+				<EditSched
 					client:only="preact"
-					class_name={name || ''}
-					initial_fields={blocks}
+					time_sistems={global_sistems}
+					sistem_id={preferences.custom_time_sistem}
+					class_name={name}
+					initial_fields={classInfo}
 				/>
 				<div class="flex flex-col gap-2">
 					<label class="text-base">

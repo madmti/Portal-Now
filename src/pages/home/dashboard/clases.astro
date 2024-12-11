@@ -1,14 +1,14 @@
 ---
 import LogoutBtn from '@components/LogoutBtn.astro';
 import DashboardLayout from '@layouts/DashboardLayout.astro';
-import { getClasses, getClassesInfo } from '@lib/database';
+import { getClassesInfo } from '@lib/database';
 import { getClassesMapFromInfo } from '@lib/format';
 import { days } from '@lib/time';
+
 const { user } = Astro.locals;
-const block_mode = true;
-const classes = await getClasses(user.uid);
-const classesInfo = await getClassesInfo(user.uid, block_mode);
+const classesInfo = await getClassesInfo(user.uid);
 const classesMap = getClassesMapFromInfo(classesInfo);
+const classesEntries = Object.entries(classesMap);
 ---
 
 <DashboardLayout>
@@ -17,7 +17,7 @@ const classesMap = getClassesMapFromInfo(classesInfo);
 		class="w-full flex flex-col gap-4 p-8 items-center justify-center"
 	>
 		{
-			!classes.length &&
+			!classesEntries.length &&
 				<h2 class="text-gray-500 text-lg mt-4">Esta muy vacio por aqui 😔</h2>
 				<p class="text-gray-500">Intenta agregar una clase</p>
 				<div class="flex gap-2">
@@ -25,36 +25,39 @@ const classesMap = getClassesMapFromInfo(classesInfo);
 					<a class="btn btn-disabled">Cargar en CFT</a>
 				</div>
 		}
-		<!-- {
-			!!classes.length &&
-				classes.map((c, i) => {
-					const class_data = classesMap.get(c.name)!;
-					return (
+		{
+			!!classesEntries.length && classesEntries.map((clas, i) => {
+				const [name, data] = clas;
+				const days_entries = Object.entries(data.days);
+				return (
 						<article class="w-full max-w-2xl flex flex-col">
 							{!!i && <div class="divider mb-20" />}
 							<div class="flex items-center justify-between">
 								<h1 class="text-2xl mb-2 flex items-center gap-2">
-									{c.name}
-									{!class_data && (
+									{name}
+									{!data && (
 										<span class="badge badge-error">Sin datos</span>
 									)}
-									{
-										//@ts-ignore
-										!!class_data && (!class_data.sched || !class_data.eval) && (
-											<span class="badge badge-warning">Incompleto</span>
-										)
-									}
 								</h1>
 								<a
-									href={`/home/dashboard/clases/${c.name}/`}
+									href={`/home/dashboard/clases/${name}/`}
 									class="btn btn-outline btn-sm btn-primary"
 								>
 									<span class="icon-[ri--info-card-fill] text-2xl" />
 								</a>
 							</div>
-							<h2 class="text-lg">Horario</h2>
+							<div class="flex items-center justify-between mt-4">
+								<h2 class="text-lg">Horario</h2>
+								<ul>
+									{
+										data.sistems_used.map((s) => (
+											<li class="badge badge-primary">{s}</li>
+										))
+									}
+								</ul>
+							</div>
 							<div class="overflow-x-auto">
-								{!!class_data && !!class_data.sched && (
+								{!!data && !!data.days && (
 									<table class="table">
 										<thead>
 											<tr>
@@ -63,47 +66,46 @@ const classesMap = getClassesMapFromInfo(classesInfo);
 											</tr>
 										</thead>
 										<tbody>
-											{Array.from(class_data.sched.entries()).map((s) => (
+											{days_entries.map((s) => {
+												const [day, day_data] = s;
+												return (
+												(
 												<tr class="list-disc">
-													<td class="w-1/2 text-left">{days[s[0]]}</td>
+													<td class="w-1/2 text-left">{days[Number(day)]}</td>
 													<td class="w-1/2 text-right">
-														{Array.from(s[1])
-															.sort()
+														{day_data.sistem_keys
 															.map((b) => (
 																<span class="badge">{b}</span>
 															))}
 													</td>
 												</tr>
-											))}
+											)
+												);
+											})}
 										</tbody>
 									</table>
-								)}
-								{(!class_data || !class_data.sched) && (
-									<p class="text-center text-gray-500 p-4">
-										No hay horario asignado
-									</p>
 								)}
 								<h2 class="text-lg">Evaluaciones</h2>
 								<p class="text-center text-gray-500 p-4">No hay evaluaciones</p>
 							</div>
 						</article>
-					);
-				})
-		} -->
+				);
+			})
+		}
 	</main>
 	<div slot="sidebar" class="h-full flex flex-col justify-between">
 		<nav class="flex min-w-[240px] flex-col gap-1 p-2 text-base">
-			<!-- {
-				classes.map((c) => (
+			{
+				classesEntries.map((cls) => (
 					<a
-						href={`/home/dashboard/clases/${c.name}/`}
+						href={`/home/dashboard/clases/${cls[0]}/`}
 						role="button"
 						class="flex items-center w-full px-4 py-2 transition-all rounded-lg outline-none text-start text-lg bg-[#0a0c0e2c] hover:bg-neutral"
 					>
-						{c.name}
+						{cls[0]}
 					</a>
 				))
-			} -->
+			}
 				<a
 					href="/home/dashboard/clases/agregar/"
 					class="flex items-center gap-2 w-full px-4 py-2 transition-all rounded-lg outline-none text-start text-lg bg-[#0a0c0e2c] text-primary hover:bg-neutral"

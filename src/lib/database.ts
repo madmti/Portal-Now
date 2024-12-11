@@ -45,41 +45,45 @@ export const getClasses = async (user_uid: string) => {
 };
 
 export type tgetClassesInfoRes = {
-    class_id: number;
     class_name: string;
-    sched_day: tNumDay;
-    sched_place: string;
-    sched_time: {
-        blocks: tBloques[];
-    };
-}[];
-export const getClassesInfo = async (user_uid: string, block_mode: boolean) => {
-    /*     return db.select({
-            class_id: Classes.id,
-            class_name: Classes.name,
-            sched_day: Schedules.day,
-            sched_place: Schedules.place,
-            sched_time: Schedules.time,
-        })
-            .from(Classes)
-            .where(sql`${Classes.user_uid} = ${user_uid} AND ${Schedules.block_mode} = ${block_mode}`)
-            .innerJoin(Schedules, eq(Classes.id, Schedules.class_id)) as Promise<tgetClassesInfoRes>; */
-    return [];
+    sched_day: number;
+    sistem_name: string;
+    sistem_key: string;
+};
+export const getClassesInfo = async (user_uid: string) => {
+    return await db.select({
+        class_name: Classes.name,
+        sched_day: Schedules.day,
+        sistem_name: TimeSistems.name,
+        sistem_key: Schedules.sistem_key,
+    })
+        .from(Schedules)
+        .where(sql`${Schedules.user_uid} = ${user_uid}`)
+        .innerJoin(Classes, eq(Schedules.class_id, Classes.id))
+        .innerJoin(TimeSistems, eq(Schedules.sistem_id, TimeSistems.id)) as tgetClassesInfoRes[];
 };
 
-export const getSchedule = async (user_uid: string, class_name: string) => {
-    /*     return db.select({
-            sched_day: Schedules.day,
-            sched_type: Schedules.type,
-            sched_place: Schedules.place,
-            sched_block_mode: Schedules.block_mode,
-            sched_time: Schedules.time,
-        })
-            .from(Classes)
-            .innerJoin(Schedules, eq(Classes.id, Schedules.class_id))
-            .where(sql`${Classes.user_uid} = ${user_uid} AND ${Classes.name} = ${class_name}`)
-            .orderBy(Schedules.day); */
-    return [];
+export type tgetClassInfoRes = {
+    sched_day: number;
+    sched_type: string;
+    sched_place: string;
+    sistem_id: number;
+    sistem_name: string;
+    sistem_key: string;
+};
+export const getClassInfo = async (user_uid: string, class_name: string) => {
+    return await db.select({
+        sched_day: Schedules.day,
+        sched_type: Schedules.type,
+        sched_place: Schedules.place,
+        sistem_id: Schedules.sistem_id,
+        sistem_name: TimeSistems.name,
+        sistem_key: Schedules.sistem_key,
+    })
+        .from(Classes)
+        .where(sql`${Classes.name} = ${class_name} AND ${Classes.user_uid} = ${user_uid}`)
+        .innerJoin(Schedules, eq(Classes.id, Schedules.class_id))
+        .innerJoin(TimeSistems, eq(Schedules.sistem_id, TimeSistems.id)) as tgetClassInfoRes[];
 }
 
 export type tgetSistemsRes = {

@@ -1,4 +1,4 @@
-import type { tgetClassesInfoRes, tgetTimeSistemRes, tgetTodayScheduleRes } from "./database";
+import type { tgetClassesInfoRes, tgetClassInfoRes, tgetTodayScheduleRes } from "./database";
 import type { tBloques } from "./time";
 
 export const schedToKeyMap = (schedule: tgetTodayScheduleRes[]) => {
@@ -13,60 +13,57 @@ export const schedToKeyMap = (schedule: tgetTodayScheduleRes[]) => {
     return key_map;
 };
 
-export const getClassesFromInfo = (classesInfo: tgetClassesInfoRes) => {
-    return classesInfo.map((classInfo) => ({
-        id: classInfo.class_id,
-        name: classInfo.class_name,
-    }));
+export type tgetClassesMapFromInfoRes = {
+    [class_name: string]: {
+        sistems_used: string[];
+        days: {
+            [day: number]: {
+                sistem_keys: string[];
+            };
+        };
+    };
 };
-export const getClassesMapFromInfo = (classesInfo: tgetClassesInfoRes) => {
-    const classesMap = new Map<string, Record<'sched', Map<number, Set<tBloques>>>>();
-    for (const classInfo of classesInfo) {
-        if (!classesMap.has(classInfo.class_name)) {
-            classesMap.set(classInfo.class_name, {
-                sched: new Map(),
-            });
+export const getClassesMapFromInfo = (classesInfo: tgetClassesInfoRes[]) => {
+    return classesInfo.reduce((acc, curr) => {
+        if (!acc[curr.class_name]) {
+            acc[curr.class_name] = {
+                sistems_used: [],
+                days: {},
+            };
         }
-        const classSched = classesMap.get(classInfo.class_name)!.sched!;
-        if (!classSched.has(classInfo.sched_day)) {
-            classSched.set(classInfo.sched_day, new Set());
+        const class_data = acc[curr.class_name];
+        if (!class_data.sistems_used.includes(curr.sistem_name)) {
+            class_data.sistems_used.push(curr.sistem_name);
         }
-        const schedDay = classSched.get(classInfo.sched_day)!;
-        for (const block of classInfo.sched_time.blocks) {
-            schedDay.add(block);
+        if (!class_data.days[curr.sched_day]) {
+            class_data.days[curr.sched_day] = {
+                sistem_keys: [],
+            };
         }
-    }
-    return classesMap;
+        class_data.days[curr.sched_day].sistem_keys.push(curr.sistem_key);
+        return acc;
+    }, {} as tgetClassesMapFromInfoRes);
 };
 
-export const repeatPerBlock = (sched: {
-    sched_day: number;
-    sched_type: string;
-    sched_place: string;
-    sched_block_mode: boolean;
-    sched_time: any;
-}[]) => {
-    const result = [];
-    for (const s of sched) {
-        if (s.sched_block_mode) {
-            for (const block of s.sched_time.blocks) {
-                result.push({
-                    sched_day: s.sched_day,
-                    sched_type: s.sched_type,
-                    sched_place: s.sched_place,
-                    sched_block_mode: s.sched_block_mode,
-                    sched_time: block,
-                });
-            }
-        } else {
-            result.push(s);
+export type tgetClassMapFromInfoRes = {
+    sistems_used: string[];
+    days: {
+        [day: number]: {
+            sistem_keys: string[];
+        };
+    };
+};
+export const getClassMapFromInfo = (classInfo: tgetClassInfoRes[]) => {
+    return classInfo.reduce((acc, curr) => {
+        if (!acc.sistems_used.includes(curr.sistem_name)) {
+            acc.sistems_used.push(curr.sistem_name);
         }
-    }
-    return result as {
-        sched_day: number;
-        sched_type: string;
-        sched_place: string;
-        sched_block_mode: boolean;
-        sched_time: string;
-    }[];
+        if (!acc.days[curr.sched_day]) {
+            acc.days[curr.sched_day] = {
+                sistem_keys: [],
+            };
+        }
+        acc.days[curr.sched_day].sistem_keys.push(curr.sistem_key);
+        return acc;
+    }, { sistems_used: [], days: {} } as tgetClassMapFromInfoRes);
 };
